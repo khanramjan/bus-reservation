@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using BusReservation.API.Data;
 using BusReservation.API.Repositories;
 using BusReservation.API.Services;
+using BusReservation.API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add SignalR
+builder.Services.AddSignalR();
 
 // Configure Database
 builder.Services.AddDbContext<BusReservationDbContext>(options =>
@@ -29,7 +33,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:4200")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -49,5 +54,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map SignalR hub
+app.MapHub<BookingHub>("/booking-hub");
 
 app.Run();

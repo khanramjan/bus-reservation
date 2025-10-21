@@ -1,120 +1,135 @@
 <div class="booking-container" *ngIf="!bookingConfirmation">
-  <div class="booking-header">
-    <h2>Complete Your Booking</h2>
-    <button class="btn btn-danger" (click)="cancelBooking()">Back to Search</button>
-  </div>
-
-  <div class="bus-summary">
-    <h3>{{ selectedBus.busName }} - {{ selectedBus.busType }}</h3>
-    <div class="route-info">
-      <span><strong>{{ selectedBus.source }}</strong></span>
-      <span style="margin: 0 15px;">→</span>
-      <span><strong>{{ selectedBus.destination }}</strong></span>
+  <!-- Seat Legend -->
+  <div class="seat-legend-header">
+    <div class="legend-item">
+      <div class="seat-icon booked-m"></div>
+      <span class="legend-label">BOOKED (M)</span>
     </div>
-    <div class="time-info">
-      <span>Departure: {{ formatTime(selectedBus.departureTime) }}</span>
-      <span style="margin: 0 15px;">|</span>
-      <span>Arrival: {{ formatTime(selectedBus.arrivalTime) }}</span>
+    <div class="legend-item">
+      <div class="seat-icon booked-f"></div>
+      <span class="legend-label">BOOKED (F)</span>
     </div>
-  </div>
-
-  <div *ngIf="errorMessage" class="alert alert-error">
-    {{ errorMessage }}
-  </div>
-
-  <div class="seat-selection">
-    <h3>Select Your Seats (Max 6)</h3>
-    <div class="seat-legend">
-      <div class="legend-item">
-        <div class="seat-demo available"></div>
-        <span>Available</span>
-      </div>
-      <div class="legend-item">
-        <div class="seat-demo selected"></div>
-        <span>Selected</span>
-      </div>
-      <div class="legend-item">
-        <div class="seat-demo booked"></div>
-        <span>Booked</span>
-      </div>
+    <div class="legend-item">
+      <div class="seat-icon blocked"></div>
+      <span class="legend-label">BLOCKED</span>
     </div>
-
-    <div class="seat-grid">
-      <div 
-        *ngFor="let seat of availableSeatsArray.concat(bookedSeats)" 
-        class="seat"
-        [class.selected]="isSeatSelected(seat)"
-        [class.booked]="isSeatBooked(seat)"
-        (click)="toggleSeat(seat)">
-        {{ seat }}
-      </div>
+    <div class="legend-item">
+      <div class="seat-icon available"></div>
+      <span class="legend-label">AVAILABLE</span>
     </div>
-
-    <div *ngIf="selectedSeats.length > 0" class="selected-seats-info">
-      <strong>Selected Seats:</strong> {{ selectedSeats.join(', ') }}
+    <div class="legend-item">
+      <div class="seat-icon selected"></div>
+      <span class="legend-label">SELECTED</span>
+    </div>
+    <div class="legend-item">
+      <div class="seat-icon sold-m"></div>
+      <span class="legend-label">SOLD (M)</span>
+    </div>
+    <div class="legend-item">
+      <div class="seat-icon sold-f"></div>
+      <span class="legend-label">SOLD (F)</span>
     </div>
   </div>
 
-  <div class="passenger-details">
-    <h3>Passenger Details</h3>
-    <form (ngSubmit)="confirmBooking()">
-      <div class="form-group">
-        <label for="name">Full Name *</label>
-        <input 
-          type="text" 
-          id="name" 
-          [(ngModel)]="passengerName" 
-          name="name"
-          placeholder="Enter your full name"
-          required>
+  <div class="booking-content">
+    <!-- Left Side: Seat Selection -->
+    <div class="seat-selection-panel">
+      <div class="bus-layout">
+        <div class="bus-front">
+          <div class="steering-wheel">🚌</div>
+        </div>
+
+        <div class="seat-grid">
+          <div 
+            *ngFor="let seat of generateSeats()" 
+            class="seat-wrapper"
+            [class.empty]="!seat">
+            <div 
+              *ngIf="seat"
+              class="seat"
+              [class.selected]="isSeatSelected(seat)"
+              [class.booked]="isSeatBooked(seat)"
+              [class.available]="!isSeatBooked(seat) && !isSeatSelected(seat)"
+              (click)="toggleSeat(seat)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Booking Details -->
+    <div class="booking-details-panel">
+      <!-- Boarding/Dropping Point Section -->
+      <div class="boarding-dropping-section">
+        <div class="section-header">
+          <span class="header-title">BOARDING/DROPPING:</span>
+          <span class="header-subtitle">BOARDING POINT*</span>
+        </div>
+        
+        <select [(ngModel)]="boardingPoint" name="boardingPoint" class="dropdown">
+          <option value="">Select boarding point</option>
+          <option value="Kallyanpur">[06:00 AM] Kallyanpur counter</option>
+          <option value="Baneshore">[10:30 AM] Baneshore Counter</option>
+          <option value="Rajshahi">[11:30 PM] Rajshahi Counter</option>
+          <option value="Rajabari">[03:00 PM] Rajabari Counter</option>
+        </select>
+
+        <div class="section-header" style="margin-top: 20px;">
+          <span class="header-subtitle">DROPPING POINT*</span>
+        </div>
+        
+        <select [(ngModel)]="droppingPoint" name="droppingPoint" class="dropdown">
+          <option value="">Select dropping point</option>
+          <option value="Kallyanpur">[06:00 AM] Kallyanpur counter</option>
+          <option value="Baneshore">[10:30 AM] Baneshore Counter</option>
+          <option value="Rajshahi">[11:30 PM] Rajshahi Counter</option>
+          <option value="Rajabari">[03:00 PM] Rajabari Counter</option>
+        </select>
+
+        <!-- Price Breakdown -->
+        <div class="price-details">
+          <div class="detail-line">Seat Fare: ৳{{ selectedBus.price }}</div>
+          <div class="detail-line text-green">Service Charge: ৳20 (- ৳20)</div>
+          <div class="detail-line text-green">PGW Charge: ৳28 (- ৳28)</div>
+          <div class="detail-line text-red">Total Discount: ৳ 48</div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="email">Email Address *</label>
-        <input 
-          type="email" 
-          id="email" 
-          [(ngModel)]="passengerEmail" 
-          name="email"
-          placeholder="Enter your email"
-          required>
-      </div>
-
-      <div class="form-group">
-        <label for="phone">Phone Number *</label>
+      <!-- Mobile Number Section -->
+      <div class="mobile-section">
+        <label class="section-label">MOBILE NUMBER*</label>
         <input 
           type="tel" 
-          id="phone" 
           [(ngModel)]="passengerPhone" 
           name="phone"
-          placeholder="Enter 10-digit phone number"
-          maxlength="10"
-          required>
+          placeholder=""
+          maxlength="11"
+          class="input-field">
       </div>
 
-      <div class="booking-summary">
-        <h3>Booking Summary</h3>
-        <div class="summary-item">
-          <span>Number of Seats:</span>
-          <span>{{ selectedSeats.length }}</span>
-        </div>
-        <div class="summary-item">
-          <span>Price per Seat:</span>
-          <span>৳{{ selectedBus.price }}</span>
-        </div>
-        <div class="summary-item">
-          <span>Total Amount:</span>
-          <span>৳{{ calculateTotal() }}</span>
-        </div>
-      </div>
-
+      <!-- Submit Button -->
       <button 
         type="submit" 
-        class="btn btn-success btn-large" 
+        class="btn-submit" 
+        (click)="confirmBooking()"
         [disabled]="isLoading || selectedSeats.length === 0">
-        {{ isLoading ? 'Processing...' : 'Confirm Booking' }}
+        {{ isLoading ? 'Processing...' : 'SUBMIT' }}
       </button>
-    </form>
+
+      <!-- Password Notice -->
+      <div class="password-notice">
+        <span>I have already verified my phone number, and have a password.</span><br>
+        <span>Login with password <a href="#">Click here</a></span>
+      </div>
+
+      <!-- Terms & Conditions -->
+      <div class="terms-section">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="agreedToTerms" name="terms">
+          <span>By logging in you are agreeing to the <strong>Terms & Conditions</strong> and <strong>Privacy Notice</strong> of bustickets</span>
+        </label>
+      </div>
+    </div>
   </div>
 </div>
 

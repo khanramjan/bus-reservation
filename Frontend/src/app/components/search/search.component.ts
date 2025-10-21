@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BookingService } from '../../services/booking.service';
+import { RealTimeService, BookingNotification } from '../../services/real-time.service';
 import { SearchRequest, AvailableBus } from '../../models/booking.models';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
   searchRequest: SearchRequest = {
     source: '',
     destination: '',
@@ -19,8 +22,8 @@ export class SearchComponent implements OnInit {
   errorMessage = '';
   selectedBus: AvailableBus | null = null;
   showFilterModal = false;
+  realtimeMessage = '';
   
-  // Filter options
   filters = {
     busType: [] as string[],
     priceRange: { min: 0, max: 5000 },
@@ -28,6 +31,7 @@ export class SearchComponent implements OnInit {
   };
   
   filteredBuses: AvailableBus[] = [];
+  private destroy$ = new Subject<void>();
 
   cities = [
     'Bagerhat', 'Bandarban', 'Barguna', 'Barisal', 'Bhola', 'Bogra', 'Brahmanbaria',
@@ -42,12 +46,38 @@ export class SearchComponent implements OnInit {
     'Tangail', 'Thakurgaon'
   ];
 
-  constructor(private bookingService: BookingService) { }
+  constructor(
+    private bookingService: BookingService,
+    private realTimeService: RealTimeService
+  ) { }
 
   ngOnInit(): void {
-    // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
     this.searchRequest.journeyDate = today;
+
+    this.realTimeService.connect().catch(err => {
+      console.error('Failed to connect to real-time service:', err);
+    });
+
+    this.realTimeService.bookingConfirmed$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((notification: BookingNotification) => {
+        this.handleBookingConfirmed(notification);
+      });
+
+    this.realTimeService.bookingCancelled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((notification: BookingNotification) => {
+        this.handleBookingCancelled(notification);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.realTimeService.disconnect().catch(err => {
+      console.error('Error disconnecting:', err);
+    });
   }
 
   searchBuses(): void {
@@ -69,6 +99,13 @@ export class SearchComponent implements OnInit {
       next: (buses) => {
         this.availableBuses = buses;
         this.isLoading = false;
+        
+        buses.forEach(bus => {
+          this.realTimeService.subscribeToSchedule(bus.scheduleId).catch(err => {
+            console.error(`Failed to subscribe to schedule ${bus.scheduleId}:`, err);
+          });
+        });
+
         if (buses.length === 0) {
           this.errorMessage = 'No buses available for the selected route and date';
         }
@@ -81,6 +118,26 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  private handleBookingConfirmed(notification: BookingNotification): void {
+    const busIndex = this.availableBuses.findIndex(b => b.scheduleId === notification.scheduleId);
+    if (busIndex !== -1) {
+      this.availableBuses[busIndex].availableSeats = notification.availableSeats;
+      this.realtimeMessage = `✓ ${notification.passengerName} just booked ${notification.bookedSeats.length} seat(s)! ${notification.availableSeats} seats left`;
+      setTimeout(() => { this.realtimeMessage = ''; }, 5000);
+      this.availableBuses = [...this.availableBuses];
+    }
+  }
+
+  private handleBookingCancelled(notification: BookingNotification): void {
+    const busIndex = this.availableBuses.findIndex(b => b.scheduleId === notification.scheduleId);
+    if (busIndex !== -1) {
+      this.availableBuses[busIndex].availableSeats = notification.availableSeats;
+      this.realtimeMessage = `↩ ${notification.passengerName}'s booking cancelled. ${notification.availableSeats} seats available`;
+      setTimeout(() => { this.realtimeMessage = ''; }, 5000);
+      this.availableBuses = [...this.availableBuses];
+    }
+  }
+
   selectBus(bus: AvailableBus): void {
     this.selectedBus = bus;
   }
@@ -91,7 +148,6 @@ export class SearchComponent implements OnInit {
   }
 
   formatDuration(duration: string): string {
-    // Duration comes as "HH:mm:ss"
     const parts = duration.split(':');
     const hours = parseInt(parts[0]);
     const minutes = parseInt(parts[1]);
@@ -100,7 +156,7 @@ export class SearchComponent implements OnInit {
 
   onBookingComplete(): void {
     this.selectedBus = null;
-    this.searchBuses(); // Refresh the list
+    this.searchBuses();
   }
 
   cancelSelection(): void {
@@ -155,19 +211,16 @@ export class SearchComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredBuses = this.availableBuses.filter(bus => {
-      // Filter by bus type
       if (this.filters.busType.length > 0) {
         if (!this.filters.busType.includes(bus.busType)) {
           return false;
         }
       }
       
-      // Filter by price range
       if (bus.price < this.filters.priceRange.min || bus.price > this.filters.priceRange.max) {
         return false;
       }
       
-      // Filter by departure time
       if (this.filters.departureTime !== 'all') {
         const departureHour = new Date(bus.departureTime).getHours();
         if (this.filters.departureTime === 'morning' && !(departureHour >= 5 && departureHour < 12)) {

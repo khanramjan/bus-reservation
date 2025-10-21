@@ -16,8 +16,9 @@ export class BookingComponent implements OnInit {
   passengerEmail = '';
   passengerPhone = '';
   selectedSeats: string[] = [];
-  availableSeatsArray: string[] = [];
-  bookedSeats: string[] = [];
+  boardingPoint = '';
+  droppingPoint = '';
+  agreedToTerms = false;
 
   isLoading = false;
   errorMessage = '';
@@ -26,24 +27,28 @@ export class BookingComponent implements OnInit {
   constructor(private bookingService: BookingService) { }
 
   ngOnInit(): void {
-    this.generateSeats();
+    // Initialize if needed
   }
 
-  generateSeats(): void {
-    const totalSeats = this.selectedBus.availableSeats + 10; // Simulate some booked seats
-    for (let i = 1; i <= totalSeats; i++) {
-      const seatNumber = `S${i.toString().padStart(2, '0')}`;
-      if (i <= this.selectedBus.availableSeats) {
-        this.availableSeatsArray.push(seatNumber);
-      } else {
-        this.bookedSeats.push(seatNumber);
+  generateSeats(): string[] {
+    const seats: (string | null)[] = [];
+    // Generate a 6x6 seat layout with aisle in middle
+    for (let row = 1; row <= 13; row++) {
+      for (let col = 1; col <= 4; col++) {
+        if (row <= this.selectedBus.availableSeats / 4) {
+          const seatNum = (row - 1) * 4 + col;
+          seats.push(`${seatNum}`);
+        } else {
+          seats.push(null);
+        }
       }
     }
+    return seats as string[];
   }
 
   toggleSeat(seat: string): void {
-    if (this.bookedSeats.includes(seat)) {
-      return;
+    if (this.isSeatBooked(seat) || this.selectedSeats.length >= 6) {
+      if (!this.isSeatSelected(seat)) return;
     }
 
     const index = this.selectedSeats.indexOf(seat);
@@ -63,7 +68,9 @@ export class BookingComponent implements OnInit {
   }
 
   isSeatBooked(seat: string): boolean {
-    return this.bookedSeats.includes(seat);
+    // Simulate some booked seats (20% of total)
+    const seatNum = parseInt(seat);
+    return seatNum > (this.selectedBus.availableSeats * 0.8);
   }
 
   calculateTotal(): number {
@@ -71,8 +78,8 @@ export class BookingComponent implements OnInit {
   }
 
   confirmBooking(): void {
-    if (!this.passengerName || !this.passengerEmail || !this.passengerPhone) {
-      this.errorMessage = 'Please fill all passenger details';
+    if (!this.boardingPoint || !this.droppingPoint || !this.passengerPhone) {
+      this.errorMessage = 'Please fill all required fields';
       return;
     }
 
@@ -81,15 +88,14 @@ export class BookingComponent implements OnInit {
       return;
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(this.passengerEmail)) {
-      this.errorMessage = 'Please enter a valid email address';
+    if (!this.agreedToTerms) {
+      this.errorMessage = 'Please agree to terms and conditions';
       return;
     }
 
-    const phonePattern = /^[0-9]{10}$/;
+    const phonePattern = /^[0-9]{10,11}$/;
     if (!phonePattern.test(this.passengerPhone)) {
-      this.errorMessage = 'Please enter a valid 10-digit phone number';
+      this.errorMessage = 'Please enter a valid phone number';
       return;
     }
 
