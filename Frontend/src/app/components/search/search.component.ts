@@ -18,6 +18,16 @@ export class SearchComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   selectedBus: AvailableBus | null = null;
+  showFilterModal = false;
+  
+  // Filter options
+  filters = {
+    busType: [] as string[],
+    priceRange: { min: 0, max: 5000 },
+    departureTime: 'all'
+  };
+  
+  filteredBuses: AvailableBus[] = [];
 
   cities = [
     'Bagerhat', 'Bandarban', 'Barguna', 'Barisal', 'Bhola', 'Bogra', 'Brahmanbaria',
@@ -127,5 +137,70 @@ export class SearchComponent implements OnInit {
     } else if (criteria === 'fare') {
       this.availableBuses.sort((a, b) => a.price - b.price);
     }
+  }
+
+  toggleFilterModal(): void {
+    this.showFilterModal = !this.showFilterModal;
+  }
+
+  toggleBusType(type: string): void {
+    const index = this.filters.busType.indexOf(type);
+    if (index > -1) {
+      this.filters.busType.splice(index, 1);
+    } else {
+      this.filters.busType.push(type);
+    }
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    this.filteredBuses = this.availableBuses.filter(bus => {
+      // Filter by bus type
+      if (this.filters.busType.length > 0) {
+        if (!this.filters.busType.includes(bus.busType)) {
+          return false;
+        }
+      }
+      
+      // Filter by price range
+      if (bus.price < this.filters.priceRange.min || bus.price > this.filters.priceRange.max) {
+        return false;
+      }
+      
+      // Filter by departure time
+      if (this.filters.departureTime !== 'all') {
+        const departureHour = new Date(bus.departureTime).getHours();
+        if (this.filters.departureTime === 'morning' && !(departureHour >= 5 && departureHour < 12)) {
+          return false;
+        }
+        if (this.filters.departureTime === 'afternoon' && !(departureHour >= 12 && departureHour < 17)) {
+          return false;
+        }
+        if (this.filters.departureTime === 'evening' && !(departureHour >= 17 && departureHour < 21)) {
+          return false;
+        }
+        if (this.filters.departureTime === 'night' && !(departureHour >= 21 || departureHour < 5)) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }
+
+  resetFilters(): void {
+    this.filters = {
+      busType: [],
+      priceRange: { min: 0, max: 5000 },
+      departureTime: 'all'
+    };
+    this.applyFilters();
+  }
+
+  getDisplayBuses(): AvailableBus[] {
+    return this.filters.busType.length > 0 || this.filters.departureTime !== 'all' || 
+           this.filters.priceRange.min > 0 || this.filters.priceRange.max < 5000 
+      ? this.filteredBuses 
+      : this.availableBuses;
   }
 }
