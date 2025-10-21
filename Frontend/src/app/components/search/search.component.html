@@ -1,0 +1,119 @@
+<div class="search-container">
+  <div class="search-form">
+    <form (ngSubmit)="searchBuses()">
+      <div class="search-inputs-row">
+        <div class="input-group from-group">
+          <label for="source">GOING FROM</label>
+          <select id="source" [(ngModel)]="searchRequest.source" name="source" required>
+            <option value="">Select source</option>
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+          </select>
+        </div>
+
+        <div class="swap-icon">
+          <span>⇄</span>
+        </div>
+
+        <div class="input-group to-group">
+          <label for="destination">GOING TO</label>
+          <select id="destination" [(ngModel)]="searchRequest.destination" name="destination" required>
+            <option value="">Select destination</option>
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+          </select>
+        </div>
+
+        <div class="input-group date-group">
+          <label for="journeyDate">JOURNEY DATE</label>
+          <input 
+            type="date" 
+            id="journeyDate" 
+            [(ngModel)]="searchRequest.journeyDate" 
+            name="journeyDate"
+            [min]="searchRequest.journeyDate"
+            required>
+        </div>
+
+        <div class="input-group date-group">
+          <label for="returnDate">RETURN DATE</label>
+          <input 
+            type="date" 
+            id="returnDate" 
+            name="returnDate"
+            placeholder="Select date">
+        </div>
+      </div>
+
+      <div class="trending-searches">
+        <span class="trending-label">Trending Searches:</span>
+        <span class="trending-item">Dhaka → Rajshahi</span>
+        <span class="trending-item">Dhaka → Barisal</span>
+        <span class="trending-item">Dhaka → Cox's Bazar</span>
+        <span class="trending-item">Dhaka → Chittagong</span>
+        <span class="trending-item">Dhaka → Chapainawabganj</span>
+      </div>
+
+      <div class="search-button-container">
+        <button type="submit" class="btn btn-search" [disabled]="isLoading">
+          {{ isLoading ? 'Searching...' : 'Search Bus' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Searching for available buses...</p>
+  </div>
+
+  <div *ngIf="!selectedBus && availableBuses.length > 0" class="bus-list">
+    <h2>Available Buses ({{ availableBuses.length }})</h2>
+    <div *ngFor="let bus of availableBuses" class="bus-card">
+      <div class="bus-header">
+        <div>
+          <div class="bus-name">{{ bus.busName }}</div>
+          <div style="color: #666; margin-top: 5px;">{{ bus.busNumber }}</div>
+        </div>
+        <span class="bus-type">{{ bus.busType }}</span>
+      </div>
+
+      <div class="bus-details">
+        <div class="detail-item">
+          <span class="detail-label">Departure</span>
+          <span class="detail-value">{{ formatTime(bus.departureTime) }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Arrival</span>
+          <span class="detail-value">{{ formatTime(bus.arrivalTime) }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Duration</span>
+          <span class="detail-value">{{ formatDuration(bus.duration) }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Available Seats</span>
+          <span class="detail-value seats-available">{{ bus.availableSeats }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="bus.amenities" style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+        <strong>Amenities:</strong> {{ bus.amenities }}
+      </div>
+
+      <div class="bus-footer">
+        <div class="price">৳{{ bus.price }}</div>
+        <button class="btn btn-success" (click)="selectBus(bus)">Select Seats</button>
+      </div>
+    </div>
+  </div>
+
+  <app-booking 
+    *ngIf="selectedBus" 
+    [selectedBus]="selectedBus"
+    (bookingComplete)="onBookingComplete()"
+    (bookingCancelled)="cancelSelection()">
+  </app-booking>
+</div>
