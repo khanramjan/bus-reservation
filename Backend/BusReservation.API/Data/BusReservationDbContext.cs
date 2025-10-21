@@ -117,40 +117,65 @@ namespace BusReservation.API.Data
                 new BusRoute { RouteId = 8, Source = "Chittagong", Destination = "Sylhet", Distance = 350, EstimatedDuration = TimeSpan.FromHours(8) }
             );
 
-            // Seed Schedules - Multiple per route
-            var baseDate = DateTime.Today.AddDays(1);
+            // Seed Schedules - Multiple per route with today and next 3 days
+            var today = DateTime.Today;
+            var day1 = today;
+            var day2 = today.AddDays(1);
+            var day3 = today.AddDays(2);
+            var day4 = today.AddDays(3);
+
             modelBuilder.Entity<Schedule>().HasData(
-                // Dhaka to Rajshahi
-                new Schedule { ScheduleId = 1, BusId = 1, RouteId = 1, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(22), ArrivalTime = baseDate.AddDays(1).AddHours(4), Price = 1250, AvailableSeats = 40, IsActive = true },
-                new Schedule { ScheduleId = 13, BusId = 5, RouteId = 1, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(20), ArrivalTime = baseDate.AddDays(1).AddHours(2), Price = 1300, AvailableSeats = 35, IsActive = true },
+                // ===== TODAY - Dhaka to Rajshahi =====
+                new Schedule { ScheduleId = 1, BusId = 1, RouteId = 1, JourneyDate = day1, DepartureTime = day1.AddHours(22), ArrivalTime = day2.AddHours(4), Price = 1250, AvailableSeats = 35, IsActive = true },
+                new Schedule { ScheduleId = 2, BusId = 5, RouteId = 1, JourneyDate = day1, DepartureTime = day1.AddHours(20), ArrivalTime = day2.AddHours(2), Price = 1300, AvailableSeats = 38, IsActive = true },
+                new Schedule { ScheduleId = 101, BusId = 3, RouteId = 1, JourneyDate = day1, DepartureTime = day1.AddHours(18), ArrivalTime = day2.AddHours(0), Price = 1200, AvailableSeats = 42, IsActive = true },
+                new Schedule { ScheduleId = 102, BusId = 11, RouteId = 1, JourneyDate = day1, DepartureTime = day1.AddHours(16), ArrivalTime = day1.AddHours(22), Price = 1350, AvailableSeats = 36, IsActive = true },
                 
-                // Dhaka to Chittagong
-                new Schedule { ScheduleId = 2, BusId = 2, RouteId = 2, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(7), ArrivalTime = baseDate.AddHours(14), Price = 850, AvailableSeats = 45, IsActive = true },
-                new Schedule { ScheduleId = 14, BusId = 6, RouteId = 2, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(10), ArrivalTime = baseDate.AddHours(17), Price = 1000, AvailableSeats = 42, IsActive = true },
-                new Schedule { ScheduleId = 15, BusId = 9, RouteId = 2, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(6), ArrivalTime = baseDate.AddHours(13), Price = 1400, AvailableSeats = 38, IsActive = true },
+                // ===== TODAY - Dhaka to Chittagong =====
+                new Schedule { ScheduleId = 3, BusId = 2, RouteId = 2, JourneyDate = day1, DepartureTime = day1.AddHours(7), ArrivalTime = day1.AddHours(14), Price = 850, AvailableSeats = 42, IsActive = true },
+                new Schedule { ScheduleId = 4, BusId = 6, RouteId = 2, JourneyDate = day1, DepartureTime = day1.AddHours(10), ArrivalTime = day1.AddHours(17), Price = 1000, AvailableSeats = 40, IsActive = true },
+                new Schedule { ScheduleId = 5, BusId = 9, RouteId = 2, JourneyDate = day1, DepartureTime = day1.AddHours(6), ArrivalTime = day1.AddHours(13), Price = 1400, AvailableSeats = 35, IsActive = true },
+                new Schedule { ScheduleId = 103, BusId = 10, RouteId = 2, JourneyDate = day1, DepartureTime = day1.AddHours(12), ArrivalTime = day1.AddHours(19), Price = 950, AvailableSeats = 45, IsActive = true },
+                new Schedule { ScheduleId = 104, BusId = 8, RouteId = 2, JourneyDate = day1, DepartureTime = day1.AddHours(8), ArrivalTime = day1.AddHours(15), Price = 1100, AvailableSeats = 43, IsActive = true },
                 
-                // Dhaka to Cox's Bazar
-                new Schedule { ScheduleId = 3, BusId = 3, RouteId = 3, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(21), ArrivalTime = baseDate.AddDays(1).AddHours(7), Price = 1100, AvailableSeats = 50, IsActive = true },
-                new Schedule { ScheduleId = 16, BusId = 7, RouteId = 3, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(19), ArrivalTime = baseDate.AddDays(1).AddHours(5), Price = 1450, AvailableSeats = 32, IsActive = true },
+                // ===== TODAY - Dhaka to Cox's Bazar =====
+                new Schedule { ScheduleId = 6, BusId = 3, RouteId = 3, JourneyDate = day1, DepartureTime = day1.AddHours(21), ArrivalTime = day2.AddHours(7), Price = 1100, AvailableSeats = 48, IsActive = true },
+                new Schedule { ScheduleId = 7, BusId = 7, RouteId = 3, JourneyDate = day1, DepartureTime = day1.AddHours(19), ArrivalTime = day2.AddHours(5), Price = 1450, AvailableSeats = 30, IsActive = true },
+                new Schedule { ScheduleId = 105, BusId = 4, RouteId = 3, JourneyDate = day1, DepartureTime = day1.AddHours(20), ArrivalTime = day2.AddHours(6), Price = 1500, AvailableSeats = 32, IsActive = true },
                 
-                // Dhaka to Sylhet
-                new Schedule { ScheduleId = 4, BusId = 4, RouteId = 4, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(23), ArrivalTime = baseDate.AddDays(1).AddHours(5), Price = 1450, AvailableSeats = 35, IsActive = true },
-                new Schedule { ScheduleId = 17, BusId = 11, RouteId = 4, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(22), ArrivalTime = baseDate.AddDays(1).AddHours(4), Price = 1320, AvailableSeats = 36, IsActive = true },
+                // ===== TODAY - Dhaka to Sylhet =====
+                new Schedule { ScheduleId = 8, BusId = 4, RouteId = 4, JourneyDate = day1, DepartureTime = day1.AddHours(23), ArrivalTime = day2.AddHours(5), Price = 1450, AvailableSeats = 33, IsActive = true },
+                new Schedule { ScheduleId = 9, BusId = 11, RouteId = 4, JourneyDate = day1, DepartureTime = day1.AddHours(22), ArrivalTime = day2.AddHours(4), Price = 1320, AvailableSeats = 34, IsActive = true },
+                new Schedule { ScheduleId = 106, BusId = 1, RouteId = 4, JourneyDate = day1, DepartureTime = day1.AddHours(21), ArrivalTime = day2.AddHours(3), Price = 1380, AvailableSeats = 37, IsActive = true },
                 
-                // Dhaka to Khulna
-                new Schedule { ScheduleId = 18, BusId = 8, RouteId = 5, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(21), ArrivalTime = baseDate.AddDays(1).AddHours(4), Price = 1200, AvailableSeats = 44, IsActive = true },
-                new Schedule { ScheduleId = 19, BusId = 10, RouteId = 5, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(20), ArrivalTime = baseDate.AddDays(1).AddHours(3), Price = 1100, AvailableSeats = 48, IsActive = true },
+                // ===== TODAY - Dhaka to Khulna =====
+                new Schedule { ScheduleId = 10, BusId = 8, RouteId = 5, JourneyDate = day1, DepartureTime = day1.AddHours(21), ArrivalTime = day2.AddHours(4), Price = 1200, AvailableSeats = 41, IsActive = true },
+                new Schedule { ScheduleId = 11, BusId = 10, RouteId = 5, JourneyDate = day1, DepartureTime = day1.AddHours(20), ArrivalTime = day2.AddHours(3), Price = 1100, AvailableSeats = 46, IsActive = true },
+                new Schedule { ScheduleId = 107, BusId = 6, RouteId = 5, JourneyDate = day1, DepartureTime = day1.AddHours(19), ArrivalTime = day2.AddHours(2), Price = 950, AvailableSeats = 42, IsActive = true },
                 
-                // Dhaka to Barisal
-                new Schedule { ScheduleId = 20, BusId = 12, RouteId = 6, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(8), ArrivalTime = baseDate.AddHours(14), Price = 800, AvailableSeats = 50, IsActive = true },
-                new Schedule { ScheduleId = 21, BusId = 2, RouteId = 6, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(14), ArrivalTime = baseDate.AddHours(20), Price = 850, AvailableSeats = 40, IsActive = true },
+                // ===== TODAY - Dhaka to Barisal =====
+                new Schedule { ScheduleId = 12, BusId = 12, RouteId = 6, JourneyDate = day1, DepartureTime = day1.AddHours(8), ArrivalTime = day1.AddHours(14), Price = 800, AvailableSeats = 48, IsActive = true },
+                new Schedule { ScheduleId = 13, BusId = 2, RouteId = 6, JourneyDate = day1, DepartureTime = day1.AddHours(14), ArrivalTime = day1.AddHours(20), Price = 850, AvailableSeats = 38, IsActive = true },
+                new Schedule { ScheduleId = 108, BusId = 9, RouteId = 6, JourneyDate = day1, DepartureTime = day1.AddHours(11), ArrivalTime = day1.AddHours(17), Price = 900, AvailableSeats = 44, IsActive = true },
                 
-                // Chittagong to Cox's Bazar
-                new Schedule { ScheduleId = 22, BusId = 9, RouteId = 7, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(6), ArrivalTime = baseDate.AddHours(9), Price = 600, AvailableSeats = 39, IsActive = true },
-                new Schedule { ScheduleId = 23, BusId = 6, RouteId = 7, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(14), ArrivalTime = baseDate.AddHours(17), Price = 650, AvailableSeats = 41, IsActive = true },
+                // ===== TODAY - Chittagong to Cox's Bazar =====
+                new Schedule { ScheduleId = 14, BusId = 9, RouteId = 7, JourneyDate = day1, DepartureTime = day1.AddHours(6), ArrivalTime = day1.AddHours(9), Price = 600, AvailableSeats = 37, IsActive = true },
+                new Schedule { ScheduleId = 15, BusId = 6, RouteId = 7, JourneyDate = day1, DepartureTime = day1.AddHours(14), ArrivalTime = day1.AddHours(17), Price = 650, AvailableSeats = 39, IsActive = true },
+                new Schedule { ScheduleId = 109, BusId = 5, RouteId = 7, JourneyDate = day1, DepartureTime = day1.AddHours(10), ArrivalTime = day1.AddHours(13), Price = 620, AvailableSeats = 36, IsActive = true },
                 
-                // Chittagong to Sylhet
-                new Schedule { ScheduleId = 24, BusId = 11, RouteId = 8, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(8), ArrivalTime = baseDate.AddHours(16), Price = 1350, AvailableSeats = 35, IsActive = true }
+                // ===== TODAY - Chittagong to Sylhet =====
+                new Schedule { ScheduleId = 16, BusId = 11, RouteId = 8, JourneyDate = day1, DepartureTime = day1.AddHours(8), ArrivalTime = day1.AddHours(16), Price = 1350, AvailableSeats = 33, IsActive = true },
+                new Schedule { ScheduleId = 110, BusId = 7, RouteId = 8, JourneyDate = day1, DepartureTime = day1.AddHours(9), ArrivalTime = day1.AddHours(17), Price = 1400, AvailableSeats = 29, IsActive = true },
+                
+                // ===== TOMORROW - Multiple routes =====
+                new Schedule { ScheduleId = 111, BusId = 1, RouteId = 1, JourneyDate = day2, DepartureTime = day2.AddHours(22), ArrivalTime = day3.AddHours(4), Price = 1250, AvailableSeats = 40, IsActive = true },
+                new Schedule { ScheduleId = 112, BusId = 2, RouteId = 2, JourneyDate = day2, DepartureTime = day2.AddHours(7), ArrivalTime = day2.AddHours(14), Price = 850, AvailableSeats = 45, IsActive = true },
+                new Schedule { ScheduleId = 113, BusId = 3, RouteId = 3, JourneyDate = day2, DepartureTime = day2.AddHours(21), ArrivalTime = day3.AddHours(7), Price = 1100, AvailableSeats = 50, IsActive = true },
+                new Schedule { ScheduleId = 114, BusId = 4, RouteId = 4, JourneyDate = day2, DepartureTime = day2.AddHours(23), ArrivalTime = day3.AddHours(5), Price = 1450, AvailableSeats = 35, IsActive = true },
+                new Schedule { ScheduleId = 115, BusId = 8, RouteId = 5, JourneyDate = day2, DepartureTime = day2.AddHours(21), ArrivalTime = day3.AddHours(4), Price = 1200, AvailableSeats = 44, IsActive = true },
+                new Schedule { ScheduleId = 116, BusId = 12, RouteId = 6, JourneyDate = day2, DepartureTime = day2.AddHours(8), ArrivalTime = day2.AddHours(14), Price = 800, AvailableSeats = 50, IsActive = true },
+                new Schedule { ScheduleId = 117, BusId = 9, RouteId = 7, JourneyDate = day2, DepartureTime = day2.AddHours(6), ArrivalTime = day2.AddHours(9), Price = 600, AvailableSeats = 39, IsActive = true },
+                new Schedule { ScheduleId = 118, BusId = 11, RouteId = 8, JourneyDate = day2, DepartureTime = day2.AddHours(8), ArrivalTime = day2.AddHours(16), Price = 1350, AvailableSeats = 35, IsActive = true }
             );
         }
     }

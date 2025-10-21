@@ -4,6 +4,7 @@ using BusReservation.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusReservation.API.Migrations
 {
     [DbContext(typeof(BusReservationDbContext))]
-    partial class BusReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251021091840_EnrichedScheduleData")]
+    partial class EnrichedScheduleData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
