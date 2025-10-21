@@ -96,4 +96,10 @@ export class SearchComponent implements OnInit {
   cancelSelection(): void {
     this.selectedBus = null;
   }
+
+  swapCities(): void {
+    const temp = this.searchRequest.source;
+    this.searchRequest.source = this.searchRequest.destination;
+    this.searchRequest.destination = temp;
+  }
 }
