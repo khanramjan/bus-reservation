@@ -20,11 +20,16 @@ export class SearchComponent implements OnInit {
   selectedBus: AvailableBus | null = null;
 
   cities = [
-    'Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Barisal', 
-    'Sylhet', 'Rangpur', 'Mymensingh', 'Comilla', 'Narayanganj',
-    'Gazipur', 'Jessore', 'Cox\'s Bazar', 'Bogra', 'Dinajpur',
-    'Pabna', 'Tangail', 'Jamalpur', 'Faridpur', 'Kushtia',
-    'Brahmanbaria', 'Narsingdi', 'Chandpur', 'Chapainawabganj'
+    'Bagerhat', 'Bandarban', 'Barguna', 'Barisal', 'Bhola', 'Bogra', 'Brahmanbaria',
+    'Chandpur', 'Chapainawabganj', 'Chittagong', 'Chuadanga', 'Comilla', 'Cox\'s Bazar',
+    'Dinajpur', 'Dhaka', 'Faridpur', 'Feni', 'Gaibandha', 'Gazipur', 'Gopalganj',
+    'Habiganj', 'Jamalpur', 'Jessore', 'Jhalokati', 'Jhenaidah', 'Joypurhat', 'Khagrachhari',
+    'Khulna', 'Kishoreganj', 'Kurigram', 'Kushtia', 'Lakshmipur', 'Lalmonirhat', 'Madaripur',
+    'Magura', 'Manikganj', 'Maulvibazar', 'Meherpur', 'Munshiganj', 'Mymensingh', 'Naogaon',
+    'Narail', 'Narayanganj', 'Narsingdi', 'Natore', 'Netrokona', 'Nilphamari', 'Noakhali',
+    'Pabna', 'Panchagarh', 'Patuakhali', 'Pirojpur', 'Rajbari', 'Rajshahi', 'Rangamati',
+    'Rangpur', 'Satkhira', 'Shariatpur', 'Sherpur', 'Sirajganj', 'Sunamganj', 'Sylhet',
+    'Tangail', 'Thakurgaon'
   ];
 
   constructor(private bookingService: BookingService) { }
