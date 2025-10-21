@@ -102,4 +102,30 @@ export class SearchComponent implements OnInit {
     this.searchRequest.source = this.searchRequest.destination;
     this.searchRequest.destination = temp;
   }
+
+  modifySearch(): void {
+    this.availableBuses = [];
+    this.selectedBus = null;
+  }
+
+  getUniqueOperators(): number {
+    const operators = new Set(this.availableBuses.map(bus => bus.busName));
+    return operators.size;
+  }
+
+  getTotalSeats(): number {
+    return this.availableBuses.reduce((total, bus) => total + bus.availableSeats, 0);
+  }
+
+  sortBy(criteria: string): void {
+    if (criteria === 'departure') {
+      this.availableBuses.sort((a, b) => 
+        new Date(a.departureTime).getTime() - new Date(b.departureTime).getTime()
+      );
+    } else if (criteria === 'seats') {
+      this.availableBuses.sort((a, b) => b.availableSeats - a.availableSeats);
+    } else if (criteria === 'fare') {
+      this.availableBuses.sort((a, b) => a.price - b.price);
+    }
+  }
 }

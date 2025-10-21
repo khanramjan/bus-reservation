@@ -69,43 +69,89 @@
     <p>Searching for available buses...</p>
   </div>
 
-  <div *ngIf="!selectedBus && availableBuses.length > 0" class="bus-list">
-    <h2>Available Buses ({{ availableBuses.length }})</h2>
-    <div *ngFor="let bus of availableBuses" class="bus-card">
-      <div class="bus-header">
-        <div>
-          <div class="bus-name">{{ bus.busName }}</div>
-          <div style="color: #666; margin-top: 5px;">{{ bus.busNumber }}</div>
+  <div *ngIf="!selectedBus && availableBuses.length > 0" class="results-section">
+    <!-- Header Banner -->
+    <div class="results-header">
+      <div class="header-content">
+        <div class="trip-info">
+          <span class="trip-label">ONWARD</span>
+          <span class="trip-route">{{ searchRequest.source }} To {{ searchRequest.destination }} On {{ searchRequest.journeyDate }}</span>
         </div>
-        <span class="bus-type">{{ bus.busType }}</span>
+        <button type="button" class="btn-modify" (click)="modifySearch()">MODIFY SEARCH</button>
       </div>
-
-      <div class="bus-details">
-        <div class="detail-item">
-          <span class="detail-label">Departure</span>
-          <span class="detail-value">{{ formatTime(bus.departureTime) }}</span>
+      
+      <div class="stats-row">
+        <div class="stat">
+          <span class="stat-label">Total Buses Found:</span>
+          <span class="stat-value">{{ availableBuses.length }}</span>
         </div>
-        <div class="detail-item">
-          <span class="detail-label">Arrival</span>
-          <span class="detail-value">{{ formatTime(bus.arrivalTime) }}</span>
+        <div class="stat">
+          <span class="stat-label">Total Operators Found:</span>
+          <span class="stat-value">{{ getUniqueOperators() }}</span>
         </div>
-        <div class="detail-item">
-          <span class="detail-label">Duration</span>
-          <span class="detail-value">{{ formatDuration(bus.duration) }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Available Seats</span>
-          <span class="detail-value seats-available">{{ bus.availableSeats }}</span>
+        <div class="stat">
+          <span class="stat-label">Total Seats Available:</span>
+          <span class="stat-value">{{ getTotalSeats() }}</span>
         </div>
       </div>
+    </div>
 
-      <div *ngIf="bus.amenities" style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-        <strong>Amenities:</strong> {{ bus.amenities }}
+    <!-- Sort and Filter Options -->
+    <div class="sort-filter-bar">
+      <div class="sort-section">
+        <span class="sort-label">SORT BY</span>
+        <button class="sort-btn" (click)="sortBy('departure')">DEPARTURE TIME ⬆</button>
+        <button class="sort-btn" (click)="sortBy('seats')">AVAILABLE SEATS ⬇</button>
+        <button class="sort-btn" (click)="sortBy('fare')">FARE ⬆</button>
+        <button class="sort-btn" (click)="sortBy('special')">SPECIAL OFFERS ⬇</button>
       </div>
+      <button class="filter-btn">FILTER BY</button>
+    </div>
 
-      <div class="bus-footer">
-        <div class="price">৳{{ bus.price }}</div>
-        <button class="btn btn-success" (click)="selectBus(bus)">Select Seats</button>
+    <!-- Bus Cards -->
+    <div class="bus-list-container">
+      <div *ngFor="let bus of availableBuses" class="bus-card-new">
+        <div class="card-left">
+          <div class="bus-company">
+            <h3 class="company-name">{{ bus.busName }}</h3>
+            <p class="bus-number">{{ bus.busNumber }}</p>
+            <div class="amenities-badge">
+              <span class="badge">{{ bus.busType }}</span>
+            </div>
+            <p class="cancellation-policy">Cancellation policy</p>
+          </div>
+        </div>
+
+        <div class="card-middle">
+          <div class="journey-segment">
+            <div class="time-point">
+              <span class="time">{{ formatTime(bus.departureTime) }}</span>
+              <span class="location">{{ searchRequest.source }}</span>
+            </div>
+            <div class="journey-line">
+              <svg width="60" height="40" viewBox="0 0 60 40">
+                <line x1="5" y1="20" x2="50" y2="20" stroke="#ddd" stroke-width="2"/>
+                <circle cx="5" cy="20" r="4" fill="#dc3545"/>
+                <circle cx="50" cy="20" r="4" fill="#dc3545"/>
+                <image x="20" y="10" width="20" height="20" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M18 8h-1V4c0-.55-.45-1-1-1H8c-.55 0-1 .45-1 1v4H6c-2.76 0-5 2.24-5 5v9h4v2h2v-2h24v2h2v-2h4v-9c0-2.76-2.24-5-5-5zm-7-4h6v4H11V4z'/%3E%3C/svg%3E"/>
+              </svg>
+            </div>
+            <div class="time-point">
+              <span class="time">{{ formatTime(bus.arrivalTime) }}</span>
+              <span class="location">{{ searchRequest.destination }}</span>
+            </div>
+          </div>
+          <p class="duration">{{ formatDuration(bus.duration) }}</p>
+          <p class="seats-info">Seats Left: <span class="seats-count">{{ bus.availableSeats }}</span></p>
+        </div>
+
+        <div class="card-right">
+          <div class="special-offer">NO EXTRA CHARGE</div>
+          <div class="price-section">
+            <span class="currency">৳</span><span class="price-value">{{ bus.price }}</span>
+          </div>
+          <button class="btn-view-seats" (click)="selectBus(bus)">VIEW SEATS</button>
+        </div>
       </div>
     </div>
   </div>

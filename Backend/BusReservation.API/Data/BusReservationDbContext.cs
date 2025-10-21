@@ -78,29 +78,79 @@ namespace BusReservation.API.Data
 
         private void SeedData(ModelBuilder modelBuilder)
         {
-            // Seed Buses
+            // Seed Buses - Expanded with more operators
             modelBuilder.Entity<Bus>().HasData(
+                // Green Line Paribahan
                 new Bus { BusId = 1, BusNumber = "DH-11-5678", BusName = "Green Line Paribahan", BusType = "AC Sleeper", TotalSeats = 40, BasePrice = 1200, Amenities = "WiFi, Charging Point, Water Bottle", IsActive = true },
+                new Bus { BusId = 5, BusNumber = "DH-11-5679", BusName = "Green Line Paribahan", BusType = "AC Sleeper", TotalSeats = 40, BasePrice = 1250, Amenities = "WiFi, Charging Point, Water Bottle", IsActive = true },
+                
+                // Shyamoli Paribahan
                 new Bus { BusId = 2, BusNumber = "CH-15-9012", BusName = "Shyamoli Paribahan", BusType = "Non-AC Seater", TotalSeats = 45, BasePrice = 800, Amenities = "Water Bottle", IsActive = true },
+                new Bus { BusId = 6, BusNumber = "CH-15-9013", BusName = "Shyamoli Paribahan", BusType = "AC Seater", TotalSeats = 45, BasePrice = 950, Amenities = "WiFi, Water Bottle", IsActive = true },
+                
+                // Hanif Enterprise
                 new Bus { BusId = 3, BusNumber = "DH-12-3456", BusName = "Hanif Enterprise", BusType = "AC Seater", TotalSeats = 50, BasePrice = 1000, Amenities = "WiFi, Water Bottle", IsActive = true },
-                new Bus { BusId = 4, BusNumber = "RJ-10-7890", BusName = "Ena Transport", BusType = "AC Sleeper", TotalSeats = 35, BasePrice = 1400, Amenities = "WiFi, Charging Point, Blanket, Water Bottle", IsActive = true }
+                new Bus { BusId = 7, BusNumber = "DH-12-3457", BusName = "Hanif Enterprise", BusType = "AC Sleeper", TotalSeats = 38, BasePrice = 1300, Amenities = "WiFi, Charging Point, Blanket", IsActive = true },
+                
+                // Ena Transport
+                new Bus { BusId = 4, BusNumber = "RJ-10-7890", BusName = "Ena Transport", BusType = "AC Sleeper", TotalSeats = 35, BasePrice = 1400, Amenities = "WiFi, Charging Point, Blanket, Water Bottle", IsActive = true },
+                new Bus { BusId = 8, BusNumber = "RJ-10-7891", BusName = "Ena Transport", BusType = "AC Seater", TotalSeats = 48, BasePrice = 1100, Amenities = "WiFi, Water Bottle", IsActive = true },
+                
+                // National Travels (New)
+                new Bus { BusId = 9, BusNumber = "CB-20-1001", BusName = "National Travels", BusType = "AC Sleeper", TotalSeats = 42, BasePrice = 1350, Amenities = "WiFi, Charging Point, Blanket, Water Bottle", IsActive = true },
+                new Bus { BusId = 10, BusNumber = "CB-20-1002", BusName = "National Travels", BusType = "AC Seater", TotalSeats = 52, BasePrice = 1050, Amenities = "WiFi, Water Bottle", IsActive = true },
+                
+                // Grameen Travels (New)
+                new Bus { BusId = 11, BusNumber = "DH-13-2001", BusName = "Grameen Travels", BusType = "AC Sleeper", TotalSeats = 39, BasePrice = 1280, Amenities = "WiFi, Charging Point, Blanket", IsActive = true },
+                new Bus { BusId = 12, BusNumber = "DH-13-2002", BusName = "Grameen Travels", BusType = "Non-AC Seater", TotalSeats = 50, BasePrice = 750, Amenities = "Water Bottle", IsActive = true }
             );
 
-            // Seed Routes
+            // Seed Routes - Expanded
             modelBuilder.Entity<BusRoute>().HasData(
                 new BusRoute { RouteId = 1, Source = "Dhaka", Destination = "Rajshahi", Distance = 256, EstimatedDuration = TimeSpan.FromHours(6) },
                 new BusRoute { RouteId = 2, Source = "Dhaka", Destination = "Chittagong", Distance = 264, EstimatedDuration = TimeSpan.FromHours(7) },
                 new BusRoute { RouteId = 3, Source = "Dhaka", Destination = "Cox's Bazar", Distance = 400, EstimatedDuration = TimeSpan.FromHours(10) },
-                new BusRoute { RouteId = 4, Source = "Dhaka", Destination = "Sylhet", Distance = 245, EstimatedDuration = TimeSpan.FromHours(6) }
+                new BusRoute { RouteId = 4, Source = "Dhaka", Destination = "Sylhet", Distance = 245, EstimatedDuration = TimeSpan.FromHours(6) },
+                new BusRoute { RouteId = 5, Source = "Dhaka", Destination = "Khulna", Distance = 280, EstimatedDuration = TimeSpan.FromHours(7) },
+                new BusRoute { RouteId = 6, Source = "Dhaka", Destination = "Barisal", Distance = 240, EstimatedDuration = TimeSpan.FromHours(6) },
+                new BusRoute { RouteId = 7, Source = "Chittagong", Destination = "Cox's Bazar", Distance = 152, EstimatedDuration = TimeSpan.FromHours(3) },
+                new BusRoute { RouteId = 8, Source = "Chittagong", Destination = "Sylhet", Distance = 350, EstimatedDuration = TimeSpan.FromHours(8) }
             );
 
-            // Seed Schedules
+            // Seed Schedules - Multiple per route
             var baseDate = DateTime.Today.AddDays(1);
             modelBuilder.Entity<Schedule>().HasData(
+                // Dhaka to Rajshahi
                 new Schedule { ScheduleId = 1, BusId = 1, RouteId = 1, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(22), ArrivalTime = baseDate.AddDays(1).AddHours(4), Price = 1250, AvailableSeats = 40, IsActive = true },
+                new Schedule { ScheduleId = 13, BusId = 5, RouteId = 1, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(20), ArrivalTime = baseDate.AddDays(1).AddHours(2), Price = 1300, AvailableSeats = 35, IsActive = true },
+                
+                // Dhaka to Chittagong
                 new Schedule { ScheduleId = 2, BusId = 2, RouteId = 2, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(7), ArrivalTime = baseDate.AddHours(14), Price = 850, AvailableSeats = 45, IsActive = true },
+                new Schedule { ScheduleId = 14, BusId = 6, RouteId = 2, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(10), ArrivalTime = baseDate.AddHours(17), Price = 1000, AvailableSeats = 42, IsActive = true },
+                new Schedule { ScheduleId = 15, BusId = 9, RouteId = 2, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(6), ArrivalTime = baseDate.AddHours(13), Price = 1400, AvailableSeats = 38, IsActive = true },
+                
+                // Dhaka to Cox's Bazar
                 new Schedule { ScheduleId = 3, BusId = 3, RouteId = 3, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(21), ArrivalTime = baseDate.AddDays(1).AddHours(7), Price = 1100, AvailableSeats = 50, IsActive = true },
-                new Schedule { ScheduleId = 4, BusId = 4, RouteId = 4, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(23), ArrivalTime = baseDate.AddDays(1).AddHours(5), Price = 1450, AvailableSeats = 35, IsActive = true }
+                new Schedule { ScheduleId = 16, BusId = 7, RouteId = 3, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(19), ArrivalTime = baseDate.AddDays(1).AddHours(5), Price = 1450, AvailableSeats = 32, IsActive = true },
+                
+                // Dhaka to Sylhet
+                new Schedule { ScheduleId = 4, BusId = 4, RouteId = 4, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(23), ArrivalTime = baseDate.AddDays(1).AddHours(5), Price = 1450, AvailableSeats = 35, IsActive = true },
+                new Schedule { ScheduleId = 17, BusId = 11, RouteId = 4, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(22), ArrivalTime = baseDate.AddDays(1).AddHours(4), Price = 1320, AvailableSeats = 36, IsActive = true },
+                
+                // Dhaka to Khulna
+                new Schedule { ScheduleId = 18, BusId = 8, RouteId = 5, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(21), ArrivalTime = baseDate.AddDays(1).AddHours(4), Price = 1200, AvailableSeats = 44, IsActive = true },
+                new Schedule { ScheduleId = 19, BusId = 10, RouteId = 5, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(20), ArrivalTime = baseDate.AddDays(1).AddHours(3), Price = 1100, AvailableSeats = 48, IsActive = true },
+                
+                // Dhaka to Barisal
+                new Schedule { ScheduleId = 20, BusId = 12, RouteId = 6, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(8), ArrivalTime = baseDate.AddHours(14), Price = 800, AvailableSeats = 50, IsActive = true },
+                new Schedule { ScheduleId = 21, BusId = 2, RouteId = 6, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(14), ArrivalTime = baseDate.AddHours(20), Price = 850, AvailableSeats = 40, IsActive = true },
+                
+                // Chittagong to Cox's Bazar
+                new Schedule { ScheduleId = 22, BusId = 9, RouteId = 7, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(6), ArrivalTime = baseDate.AddHours(9), Price = 600, AvailableSeats = 39, IsActive = true },
+                new Schedule { ScheduleId = 23, BusId = 6, RouteId = 7, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(14), ArrivalTime = baseDate.AddHours(17), Price = 650, AvailableSeats = 41, IsActive = true },
+                
+                // Chittagong to Sylhet
+                new Schedule { ScheduleId = 24, BusId = 11, RouteId = 8, JourneyDate = baseDate, DepartureTime = baseDate.AddHours(8), ArrivalTime = baseDate.AddHours(16), Price = 1350, AvailableSeats = 35, IsActive = true }
             );
         }
     }
