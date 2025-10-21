@@ -490,49 +490,69 @@ h2 {
 
 .card-middle {
   text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .journey-segment {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  justify-content: space-around;
+  gap: 20px;
+  width: 100%;
 }
 
-.time-point {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 0 0 60px;
+.journey-left,
+.journey-right {
+  flex: 0 0 120px;
+  text-align: center;
+}
+
+.label {
+  font-size: 0.7rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
 }
 
 .time {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #333;
+  margin: 0 0 5px 0;
 }
 
 .location {
-  font-size: 0.7rem;
-  color: #999;
-  margin-top: 3px;
-}
-
-.journey-line {
-  flex: 1;
-  margin: 0 10px;
-}
-
-.duration {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #666;
-  margin: 8px 0;
+  margin: 0;
+}
+
+.bus-icon-section {
+  flex: 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bus-icon {
+  font-size: 2.5rem;
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .seats-info {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #666;
   margin: 0;
+  white-space: nowrap;
 }
 
 .seats-count {

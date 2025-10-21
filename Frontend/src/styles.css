@@ -1,3 +1,6 @@
+/* FontAwesome Icons */
+@import '@fortawesome/fontawesome-free/css/all.css';
+
 /* Global Styles */
 * {
   margin: 0;
