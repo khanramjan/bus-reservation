@@ -52,8 +52,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const today = new Date().toISOString().split('T')[0];
-    this.searchRequest.journeyDate = today;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.searchRequest.journeyDate = tomorrow.toISOString().split('T')[0];
 
     this.realTimeService.connect().catch(err => {
       console.error('Failed to connect to real-time service:', err);

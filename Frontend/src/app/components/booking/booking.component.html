@@ -107,6 +107,17 @@
           class="input-field">
       </div>
 
+      <!-- Gender Section -->
+      <div class="gender-section">
+        <label class="section-label">GENDER*</label>
+        <select [(ngModel)]="passengerGender" name="gender" class="dropdown">
+          <option value="">Select gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
       <!-- Submit Button -->
       <button 
         type="submit" 

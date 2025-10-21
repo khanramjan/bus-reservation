@@ -15,6 +15,7 @@ export class BookingComponent implements OnInit {
   passengerName = '';
   passengerEmail = '';
   passengerPhone = '';
+  passengerGender = ''; // Male, Female, Other
   selectedSeats: string[] = [];
   boardingPoint = '';
   droppingPoint = '';
@@ -23,38 +24,45 @@ export class BookingComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   bookingConfirmation: BookingResponse | null = null;
+  bookedSeats: string[] = []; // Track all booked seats
 
   constructor(private bookingService: BookingService) { }
 
   ngOnInit(): void {
-    // Initialize if needed
+    // Initialize booked seats - parse from bus data if available
+    this.initializeBookedSeats();
+  }
+
+  private initializeBookedSeats(): void {
+    // This would typically come from the backend
+    // For now, we'll start with empty and update when bookings happen
+    this.bookedSeats = [];
   }
 
   generateSeats(): string[] {
     const seats: (string | null)[] = [];
-    // Generate a 6x6 seat layout with aisle in middle
+    // Generate a 4x13 seat layout
     for (let row = 1; row <= 13; row++) {
       for (let col = 1; col <= 4; col++) {
-        if (row <= this.selectedBus.availableSeats / 4) {
-          const seatNum = (row - 1) * 4 + col;
-          seats.push(`${seatNum}`);
-        } else {
-          seats.push(null);
-        }
+        const seatNum = (row - 1) * 4 + col;
+        seats.push(`${seatNum}`);
       }
     }
     return seats as string[];
   }
 
   toggleSeat(seat: string): void {
-    if (this.isSeatBooked(seat) || this.selectedSeats.length >= 6) {
-      if (!this.isSeatSelected(seat)) return;
+    if (this.isSeatBooked(seat)) {
+      // Cannot book already booked seats
+      return;
     }
 
     const index = this.selectedSeats.indexOf(seat);
     if (index > -1) {
+      // Deselect seat
       this.selectedSeats.splice(index, 1);
     } else {
+      // Select seat
       if (this.selectedSeats.length < 6) { // Max 6 seats per booking
         this.selectedSeats.push(seat);
       } else {
@@ -68,9 +76,7 @@ export class BookingComponent implements OnInit {
   }
 
   isSeatBooked(seat: string): boolean {
-    // Simulate some booked seats (20% of total)
-    const seatNum = parseInt(seat);
-    return seatNum > (this.selectedBus.availableSeats * 0.8);
+    return this.bookedSeats.includes(seat);
   }
 
   calculateTotal(): number {
@@ -78,7 +84,7 @@ export class BookingComponent implements OnInit {
   }
 
   confirmBooking(): void {
-    if (!this.boardingPoint || !this.droppingPoint || !this.passengerPhone) {
+    if (!this.boardingPoint || !this.droppingPoint || !this.passengerPhone || !this.passengerGender) {
       this.errorMessage = 'Please fill all required fields';
       return;
     }
@@ -104,6 +110,7 @@ export class BookingComponent implements OnInit {
       passengerName: this.passengerName,
       passengerEmail: this.passengerEmail,
       passengerPhone: this.passengerPhone,
+      passengerGender: this.passengerGender,
       numberOfSeats: this.selectedSeats.length,
       seatNumbers: this.selectedSeats
     };
@@ -115,6 +122,12 @@ export class BookingComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.bookingConfirmation = response;
+        
+        // Add booked seats to the list
+        this.bookedSeats = [...this.bookedSeats, ...this.selectedSeats];
+        
+        // Clear selection
+        this.selectedSeats = [];
       },
       error: (error) => {
         this.isLoading = false;
@@ -129,16 +142,29 @@ export class BookingComponent implements OnInit {
   }
 
   bookAnother(): void {
-    this.bookingComplete.emit();
+    this.selectedSeats = [];
+    this.bookingConfirmation = null;
+    this.boardingPoint = '';
+    this.droppingPoint = '';
+    this.passengerName = '';
+    this.passengerEmail = '';
+    this.passengerPhone = '';
+    this.passengerGender = '';
+    this.agreedToTerms = false;
+    this.errorMessage = '';
   }
 
-  formatTime(dateTimeString: string): string {
+  formatTime(dateTimeString: string | undefined): string {
+    if (!dateTimeString) return '';
     const date = new Date(dateTimeString);
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   }
 
-  formatDate(dateTimeString: string): string {
+  formatDate(dateTimeString: string | undefined): string {
+    if (!dateTimeString) return '';
     const date = new Date(dateTimeString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
+
+  private phonePattern = /^[0-9]{10,11}$/;
 }

@@ -25,6 +25,7 @@ export interface BookingRequest {
   passengerName: string;
   passengerEmail: string;
   passengerPhone: string;
+  passengerGender: string;
   numberOfSeats: number;
   seatNumbers: string[];
 }

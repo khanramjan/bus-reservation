@@ -1,13 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-using BusReservation.API.Data;
-using BusReservation.API.Repositories;
-using BusReservation.API.Services;
+using BusReservation.Infrastructure.Data;
+using BusReservation.ApplicationContracts.Interfaces;
+using BusReservation.Infrastructure.Repositories;
+using BusReservation.Application.Services;
 using BusReservation.API.Hubs;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+        options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use JsonPropertyName attributes
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -16,7 +24,7 @@ builder.Services.AddSignalR();
 
 // Configure Database
 builder.Services.AddDbContext<BusReservationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register repositories
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();

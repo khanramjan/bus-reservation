@@ -1,31 +1,18 @@
-using BusReservation.API.DTOs;
-using BusReservation.API.Models;
-using BusReservation.API.Repositories;
-using BusReservation.API.Hubs;
-using Microsoft.AspNetCore.SignalR;
+using BusReservation.ApplicationContracts.DTOs;
+using BusReservation.ApplicationContracts.Interfaces;
+using BusReservation.Domain.Entities;
 
-namespace BusReservation.API.Services
+namespace BusReservation.Application.Services
 {
-    public interface IBookingService
-    {
-        Task<List<AvailableBusDto>> SearchAvailableBusesAsync(SearchRequestDto searchRequest);
-        Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest);
-        Task<BookingResponseDto?> GetBookingDetailsAsync(string bookingReference);
-        Task<List<BookingResponseDto>> GetBookingsByEmailAsync(string email);
-        Task<bool> CancelBookingAsync(CancellationRequestDto cancellationRequest);
-    }
-
     public class BookingService : IBookingService
     {
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IBookingRepository _bookingRepository;
-        private readonly IHubContext<BookingHub> _hubContext;
 
-        public BookingService(IScheduleRepository scheduleRepository, IBookingRepository bookingRepository, IHubContext<BookingHub> hubContext)
+        public BookingService(IScheduleRepository scheduleRepository, IBookingRepository bookingRepository)
         {
             _scheduleRepository = scheduleRepository;
             _bookingRepository = bookingRepository;
-            _hubContext = hubContext;
         }
 
         public async Task<List<AvailableBusDto>> SearchAvailableBusesAsync(SearchRequestDto searchRequest)
@@ -87,20 +74,6 @@ namespace BusReservation.API.Services
             // Update available seats
             schedule.AvailableSeats -= bookingRequest.NumberOfSeats;
             await _scheduleRepository.UpdateScheduleAsync(schedule);
-
-            // Notify all connected clients about the booking
-            var notification = new BookingNotification
-            {
-                ScheduleId = bookingRequest.ScheduleId,
-                BookingReference = bookingReference,
-                AvailableSeats = schedule.AvailableSeats,
-                BookedSeats = bookingRequest.SeatNumbers,
-                PassengerName = bookingRequest.PassengerName,
-                BookingTime = DateTime.UtcNow
-            };
-
-            await _hubContext.Clients.Group($"schedule-{bookingRequest.ScheduleId}")
-                .SendAsync("BookingConfirmed", notification);
 
             return new BookingResponseDto
             {
@@ -193,19 +166,6 @@ namespace BusReservation.API.Services
             {
                 schedule.AvailableSeats += booking.NumberOfSeats;
                 await _scheduleRepository.UpdateScheduleAsync(schedule);
-
-                // Notify all connected clients about the cancellation
-                var notification = new BookingNotification
-                {
-                    ScheduleId = booking.ScheduleId,
-                    BookingReference = booking.BookingReference,
-                    AvailableSeats = schedule.AvailableSeats,
-                    PassengerName = booking.PassengerName,
-                    BookingTime = DateTime.UtcNow
-                };
-
-                await _hubContext.Clients.Group($"schedule-{booking.ScheduleId}")
-                    .SendAsync("BookingCancelled", notification);
             }
 
             return true;

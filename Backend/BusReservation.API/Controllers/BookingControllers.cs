@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using BusReservation.API.DTOs;
-using BusReservation.API.Services;
+using BusReservation.ApplicationContracts.DTOs;
+using BusReservation.ApplicationContracts.Interfaces;
+using Microsoft.AspNetCore.SignalR;
+using BusReservation.API.Hubs;
 
 namespace BusReservation.API.Controllers
 {
@@ -9,10 +11,12 @@ namespace BusReservation.API.Controllers
     public class BusesController : ControllerBase
     {
         private readonly IBookingService _bookingService;
+        private readonly IHubContext<BookingHub> _hubContext;
 
-        public BusesController(IBookingService bookingService)
+        public BusesController(IBookingService bookingService, IHubContext<BookingHub> hubContext)
         {
             _bookingService = bookingService;
+            _hubContext = hubContext;
         }
 
         [HttpPost("search")]
@@ -35,10 +39,12 @@ namespace BusReservation.API.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly IBookingService _bookingService;
+        private readonly IHubContext<BookingHub> _hubContext;
 
-        public BookingsController(IBookingService bookingService)
+        public BookingsController(IBookingService bookingService, IHubContext<BookingHub> hubContext)
         {
             _bookingService = bookingService;
+            _hubContext = hubContext;
         }
 
         [HttpPost]
@@ -47,6 +53,21 @@ namespace BusReservation.API.Controllers
             try
             {
                 var booking = await _bookingService.CreateBookingAsync(bookingRequest);
+                
+                // Notify connected clients about the booking
+                var notification = new BookingNotification
+                {
+                    ScheduleId = bookingRequest.ScheduleId,
+                    BookingReference = booking.BookingReference,
+                    AvailableSeats = booking.NumberOfSeats, // This will be updated based on search results
+                    BookedSeats = bookingRequest.SeatNumbers,
+                    PassengerName = bookingRequest.PassengerName,
+                    BookingTime = DateTime.UtcNow
+                };
+
+                await _hubContext.Clients.Group($"schedule-{bookingRequest.ScheduleId}")
+                    .SendAsync("BookingConfirmed", notification);
+                
                 return Ok(booking);
             }
             catch (Exception ex)

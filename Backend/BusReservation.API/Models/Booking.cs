@@ -8,6 +8,7 @@ namespace BusReservation.API.Models
         public string PassengerName { get; set; } = string.Empty;
         public string PassengerEmail { get; set; } = string.Empty;
         public string PassengerPhone { get; set; } = string.Empty;
+        public string PassengerGender { get; set; } = "Not Specified"; // Male, Female, Other, Not Specified
         public int NumberOfSeats { get; set; }
         public string SeatNumbers { get; set; } = string.Empty; // Comma-separated
         public decimal TotalAmount { get; set; }
