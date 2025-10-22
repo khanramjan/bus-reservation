@@ -3,6 +3,7 @@ using System;
 using BusReservation.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusReservation.Infrastructure.Migrations
 {
     [DbContext(typeof(BusReservationDbContext))]
-    partial class BusReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251022054910_AddComprehensiveSchedules")]
+    partial class AddComprehensiveSchedules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -75,7 +78,7 @@ namespace BusReservation.Infrastructure.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("BusReservation.Domain.Entities.Bus", b =>
@@ -114,7 +117,7 @@ namespace BusReservation.Infrastructure.Migrations
 
                     b.HasKey("BusId");
 
-                    b.ToTable("Buses", (string)null);
+                    b.ToTable("Buses");
 
                     b.HasData(
                         new
@@ -272,7 +275,7 @@ namespace BusReservation.Infrastructure.Migrations
 
                     b.HasKey("RouteId");
 
-                    b.ToTable("Routes", (string)null);
+                    b.ToTable("Routes");
 
                     b.HasData(
                         new
@@ -369,7 +372,7 @@ namespace BusReservation.Infrastructure.Migrations
 
                     b.HasIndex("RouteId");
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
 
                     b.HasData(
                         new
