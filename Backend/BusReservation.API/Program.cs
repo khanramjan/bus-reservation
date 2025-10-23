@@ -32,6 +32,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 // Register services
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
